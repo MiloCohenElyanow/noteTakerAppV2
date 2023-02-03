@@ -4,12 +4,24 @@ const { v4 } = require('uuid')
 
 // GET "/api/notes" responds with all notes from the database
 router.get('/notes', (req, res) => {
-  
+  fs.readFile("./db/db.json", "utf-8", (err,data)=> {
+    err && res.status(500);
+    res.json(JSON.parse(data))
+  })
 });
 
 // POST "/api/notes" adds a note to the database
 router.post('/notes', (req, res) => {
-  
+  const newNote = {...req.body, id:v4()}
+  fs.readFile("./db/db.json", "utf-8", (err, data) => {
+    err && res.status(500)
+    const parsedData = JSON.parse(data)
+    parsedData.push(newNote)
+    fs.writeFile("./db/db.json", JSON.stringify(parsedData), err => {
+      err && res.status(500)
+      res.json(parsedData)
+    })
+  })
 });
 
 // DELETE "/api/notes" deletes the note with an id equal to req.params.id
