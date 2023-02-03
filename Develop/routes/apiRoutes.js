@@ -26,7 +26,15 @@ router.post('/notes', (req, res) => {
 
 // DELETE "/api/notes" deletes the note with an id equal to req.params.id
 router.delete('/notes/:id', (req, res) => {
-  
+  fs.readFile('./db/db.json', 'utf-8', (err, data) => {
+    err && res.status(500)
+    const parsed = JSON.parse(data)
+    const notes = parsed.filter(bruh => bruh.id !== req.params.id)
+    fs.writeFile('./db/db.json', JSON.stringify(notes), err => {
+      err && res.status(500)
+      res.json(notes)
+    })
+  })
 });
 
 // PUT "api/notes" updates a note with an id equal to req.params.id
